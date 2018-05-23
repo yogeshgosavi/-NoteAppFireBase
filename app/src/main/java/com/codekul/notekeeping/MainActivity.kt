@@ -1,7 +1,10 @@
 package com.codekul.notekeeping
 
 import android.app.Activity
+import android.app.SearchManager
+import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
@@ -10,22 +13,26 @@ import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.ArrayAdapter
-import android.widget.SearchView
-import com.codekul.notekeeping.R.id.*
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.content_create.*
 import kotlinx.android.synthetic.main.content_main.*
-import kotlinx.android.synthetic.main.note_card.*
 import java.io.FileNotFoundException
 import android.support.v4.widget.SwipeRefreshLayout
-import android.support.v4.view.MenuItemCompat.getActionView
-import android.content.Context.SEARCH_SERVICE
-import android.app.SearchManager
-import android.content.Context
+import android.support.v7.widget.SearchView
+import android.view.MenuInflater
+import com.codekul.notekeeping.R.id.action_view
 
 
-class MainActivity : AppCompatActivity(), ItemRowListener{
+
+class MainActivity : AppCompatActivity(), ItemRowListener ,SearchView.OnQueryTextListener{
+    override fun onQueryTextSubmit(query: String?): Boolean {
+
+        return true //added by me
+    }
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        return true //added by me
+    }
+
     override fun onItemTouched(title: String, data: String?) {
             Log.i("@yog","card_onClick")
             val intent = Intent(this,CreateActivity::class.java)
@@ -63,25 +70,25 @@ class MainActivity : AppCompatActivity(), ItemRowListener{
 //            mSwipeRefreshLayout?.isRefreshing = true
 //        }
 
-
         val recyclerView = findViewById(R.id.cardview_note) as RecyclerView
         recyclerView.layoutManager = GridLayoutManager(this,2)
         updateList()
         adapt= Adapter(this,rawData)
         recyclerView.adapter = adapt
-
-
-
-
     }
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_view, menu)
+      val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
+       val searchView = menu.findItem(R.id.search_view).actionView as SearchView
+       if(null!= searchView) {
+           searchView.setSearchableInfo(
+                   searchManager.getSearchableInfo(componentName))
+           searchView.setIconifiedByDefault(true)
+       }
+        searchView.setOnQueryTextListener(this)
 
-//        val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
-//        val searchView = menu.findItem(R.id.search_view).actionView as SearchView
-//        searchView.setSearchableInfo(
-//                searchManager.getSearchableInfo(componentName))
+
 
         return true
     }
@@ -91,25 +98,45 @@ class MainActivity : AppCompatActivity(), ItemRowListener{
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.action_view -> {
-                val recyclerView = findViewById(R.id.cardview_note) as RecyclerView
-                recyclerView.layoutManager = LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false)
-                recyclerView.adapter = adapt
+                var view_single : Drawable = resources.getDrawable(R.drawable.ic_view_single)
+                var view_two : Drawable = resources.getDrawable(R.drawable.ic_view_two_card_layout)
+                item.icon = view_single
+
+                item.setOnMenuItemClickListener {
+                    Log.i("@codekul","${item.icon == view_two}")
+                    Log.i("@codekul","${item.icon == view_single}")
+
+                    if(item.icon == view_single ){
+//                if(item.icon.drawable.ic_view_two_card_layout) ){
+                        val recyclerView = findViewById(R.id.cardview_note) as RecyclerView
+                        recyclerView.layoutManager = LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false)
+                        recyclerView.adapter = adapt
+                        adapt?.notifyDataSetChanged()
+                        item.setIcon(view_two)
+                    } else if(item.icon == view_two){
+//                    if(item.icon  == R.drawable.ic_view_two_card_layout as Drawable){
+                        val recyclerView = findViewById(R.id.cardview_note) as RecyclerView
+                        recyclerView.layoutManager = GridLayoutManager(this,2)
+                        recyclerView.adapter = adapt
+                        adapt?.notifyDataSetChanged()
+                        item.setIcon(view_single)
+                    }
+                     true
+                }
 
                 return true
             }
             R.id.search_view -> {
 
+
                 return true
             }
-
             else -> super.onOptionsItemSelected(item)
         }
     }
 
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
         when (requestCode) {
             RESULT_CODE -> if (resultCode == Activity.RESULT_OK) {
                 updateList()
@@ -130,7 +157,6 @@ class MainActivity : AppCompatActivity(), ItemRowListener{
 
     override fun onBackPressed() {
        updateList()
-
         super.onBackPressed()
     }
 
@@ -147,12 +173,9 @@ class MainActivity : AppCompatActivity(), ItemRowListener{
                null
            }
         }
-
         adapt?.notifyDataSetChanged()
         mSwipeRefreshLayout?.isRefreshing = false;
     }
-
-
 
     fun retrieve(filename: String): String? {
         val isp = openFileInput("$filename.txt")

@@ -26,22 +26,17 @@ class CreateActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeButtonEnabled(true)
-
         var bndl = intent.extras
-
         var filenamereceived = bndl?.getString("filename")
         if(filenamereceived!= null) {
             retrieve(filenamereceived)
         }
-
-
         fab.setOnClickListener { view ->
-
 
             var file_name = titleofNote.text.toString()
             var file_details = description.text.toString()
             if(file_name.equals("")){
-               showDialog("title blank")
+                showDialog("title blank")
             }else if (file_details.equals("")){
                 showDialog("data empty")
             }else if(file_name.isNotBlank() && file_details.isNotBlank()){
@@ -51,10 +46,7 @@ class CreateActivity : AppCompatActivity() {
                             back()
                         }).show()
             }
-
-
         }
-
     }
 
     fun saveNote(filename:String, filedetails:String){
@@ -64,11 +56,7 @@ class CreateActivity : AppCompatActivity() {
             }
         }
         else {
-
-
         }
-
-
     }
 
     fun retrieve(filename: String) {
@@ -79,11 +67,13 @@ class CreateActivity : AppCompatActivity() {
         titleofNote.setText(filename)
         description.setText(dt)
     }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
     }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -98,7 +88,6 @@ class CreateActivity : AppCompatActivity() {
                 finish()
                 return true
             }
-
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -107,6 +96,7 @@ class CreateActivity : AppCompatActivity() {
         back()
         super.onBackPressed()
     }
+
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
         return super.onSupportNavigateUp()
@@ -116,7 +106,8 @@ class CreateActivity : AppCompatActivity() {
         val backInt = Intent()
         setResult(Activity.RESULT_OK, backInt)
         finish()
-}
+    }
+
     fun showDialog(tag : String) = MyDialogs().show(supportFragmentManager,tag)
 
 }

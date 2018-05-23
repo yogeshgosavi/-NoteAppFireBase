@@ -6,7 +6,7 @@
         android:id="@+id/action_view"
         android:orderInCategory="101"
         android:title="card view"
-        android:icon="@drawable/ic_view_two_card_layout"
+        android:icon="@drawable/ic_view_single"
         app:showAsAction="always" />
     <item
         android:id="@+id/search_view"

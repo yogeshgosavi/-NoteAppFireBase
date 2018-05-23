@@ -53,14 +53,11 @@ class MyDialogs : DialogFragment() {
                             dialog, which -> null
                         })
                         .create()
-
             }
         }
 
             return Dialog(activity as Context)
-
         }
-
     }
 
 

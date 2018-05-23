@@ -17,20 +17,15 @@ import org.w3c.dom.Text
 data class note(val title: String, val data: String?)
 
 class Adapter (context: Context ,val notes: ArrayList<note>) : RecyclerView.Adapter<Adapter.ViewHolder>()  {
-
     private var rowListener: ItemRowListener = context as ItemRowListener
-
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder? {
         val v = LayoutInflater.from(parent?.context).inflate(R.layout.note_card,parent,false)
-
         return ViewHolder(v)
     }
-
 
     override fun getItemCount(): Int {
 return notes.size
     }
-
 
     override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
         val note:note = notes[position]
@@ -39,15 +34,12 @@ return notes.size
         holder?.cardView?.setOnClickListener {
             rowListener.onItemTouched(note.title,note.data)
         }
-
-
     }
 
     class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         val titleview = itemView.findViewById(R.id.title) as TextView
         val dataview = itemView.findViewById(R.id.data) as TextView
         var cardView = itemView.findViewById(R.id.cardview_note_card) as CardView
-
     }
 
 }
