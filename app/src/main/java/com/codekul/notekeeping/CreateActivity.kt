@@ -16,6 +16,7 @@ import android.widget.Toast
 
 import kotlinx.android.synthetic.main.activity_create.*
 import kotlinx.android.synthetic.main.content_create.*
+import java.io.BufferedWriter
 import java.io.File
 
 class CreateActivity : AppCompatActivity() {
@@ -39,8 +40,8 @@ class CreateActivity : AppCompatActivity() {
                 showDialog("title blank")
             }else if (file_details.equals("")){
                 showDialog("data empty")
-            }else if(file_name.isNotBlank() && file_details.isNotBlank()){
-                saveNote(file_name,file_details)
+            }else {
+                saveNote(file_name, file_details)
                 Snackbar.make(view, "Your Note Saved", Snackbar.LENGTH_LONG)
                         .setAction("Go Back", {
                             back()
@@ -53,11 +54,10 @@ class CreateActivity : AppCompatActivity() {
         if(filename.isNotBlank() && filedetails.isNotBlank()){
             openFileOutput("$filename.txt", Context.MODE_PRIVATE).use {
                 it.write(filedetails.toByteArray())
-            }
+           }
         }
-        else {
         }
-    }
+
 
     fun retrieve(filename: String) {
         val isp = openFileInput("$filename.txt")

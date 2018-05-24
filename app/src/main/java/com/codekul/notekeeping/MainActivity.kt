@@ -20,11 +20,12 @@ import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.SearchView
 import android.view.MenuInflater
 import com.codekul.notekeeping.R.id.action_view
-
+import com.codekul.notekeeping.R.id.swipe_container
 
 
 class MainActivity : AppCompatActivity(), ItemRowListener ,SearchView.OnQueryTextListener{
     override fun onQueryTextSubmit(query: String?): Boolean {
+
 
         return true //added by me
     }
@@ -62,6 +63,11 @@ class MainActivity : AppCompatActivity(), ItemRowListener ,SearchView.OnQueryTex
                 android.R.color.holo_green_dark,
                 android.R.color.holo_orange_dark,
                 android.R.color.holo_blue_dark)
+        mSwipeRefreshLayout?.post{
+
+                mSwipeRefreshLayout?.isRefreshing = true
+
+        }
 //        /**
 //         * Showing Swipe Refresh animation on activity create
 //         * As animation won't start on onCreate, post runnable is used
@@ -75,6 +81,7 @@ class MainActivity : AppCompatActivity(), ItemRowListener ,SearchView.OnQueryTex
         updateList()
         adapt= Adapter(this,rawData)
         recyclerView.adapter = adapt
+
     }
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -161,7 +168,6 @@ class MainActivity : AppCompatActivity(), ItemRowListener ,SearchView.OnQueryTex
     }
 
     fun  updateList(){
-        mSwipeRefreshLayout?.isRefreshing =true
         rawData.clear()
         filesDir.list().forEach {
            try {
@@ -174,7 +180,7 @@ class MainActivity : AppCompatActivity(), ItemRowListener ,SearchView.OnQueryTex
            }
         }
         adapt?.notifyDataSetChanged()
-        mSwipeRefreshLayout?.isRefreshing = false;
+        mSwipeRefreshLayout?.isRefreshing = false
     }
 
     fun retrieve(filename: String): String? {
