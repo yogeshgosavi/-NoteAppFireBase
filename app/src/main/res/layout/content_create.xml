@@ -18,6 +18,13 @@
        android:lines="1"
        android:singleLine="true"
        android:fontFamily="serif-monospace"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/timestampView"
+        android:text=""
+        android:fontFamily="serif-monospace"
+        />
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

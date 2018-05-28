@@ -22,26 +22,36 @@
     android:layout_width="match_parent"
     android:layout_height="0dp"
     android:textAlignment="textStart"
-    android:text="HELLO YOG"
+    android:text="Note Title"
     android:layout_weight="0.2"
     android:textStyle="bold"
     android:textSize="20sp"
+    android:maxLines="1"
     android:textColor="#000000"
    android:padding="5dp"
     style="@style/bft"/>
 
     <TextView
         android:id="@+id/data"
-        android:layout_weight="0.8"
+        android:layout_weight="0.7"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:text="Details of Note . . ."
         android:textSize="18sp"
         android:textColor="#5f5f5f"
-        android:maxLines="7"
-
+        android:maxLines="5"
         android:padding="5dp"
         style="@style/bft"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.1"
+        android:gravity="right"
+        android:text="Date Holder"
+        android:textSize="12sp"
+        android:paddingRight="5dp"
+        android:id="@+id/timestamp"
+        />
 </LinearLayout>
 
 

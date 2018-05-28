@@ -15,39 +15,93 @@ import android.view.Menu
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
-import java.io.FileNotFoundException
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.SearchView
-import android.view.MenuInflater
-import com.codekul.notekeeping.R.id.action_view
-import com.codekul.notekeeping.R.id.swipe_container
+import com.google.firebase.database.*
 
 
 class MainActivity : AppCompatActivity(), ItemRowListener ,SearchView.OnQueryTextListener{
+
+    //Get Access to Firebase database, no need of any URL, Firebase
+    //identifies the connection via the package name of the app
+    lateinit var mDatabase: DatabaseReference
+    var noteItemList: MutableList<NoteFB>? = null
+     var  adapter : Adapter? = null
+    var mSwipeRefreshLayout: SwipeRefreshLayout? = null
+    final private val RESULT_CODE = 11;
+
+    var itemListener: ValueEventListener = object : ValueEventListener {
+        override fun onDataChange(dataSnapshot: DataSnapshot) {
+            // Get Post object and use the values to update the UI
+            addDataToList(dataSnapshot)
+        }
+
+        private fun addDataToList(dataSnapshot: DataSnapshot) {
+
+                mSwipeRefreshLayout?.isRefreshing = true
+
+            val items = dataSnapshot.children.iterator()
+            //Check if current database contains any collection
+            if (items.hasNext()) {
+                val toDoListindex = items.next()
+                val itemsIterator = toDoListindex.children.iterator()
+
+                //check if the collection has any to do items or not
+                while (itemsIterator.hasNext()) {
+                    //get current item
+                    val currentItem = itemsIterator.next()
+                    val NoteItem = NoteFB.create()
+
+                    //get current data in a map
+                    val map = currentItem.getValue() as HashMap<String, Any>
+                    //key will return Firebase ID
+                    NoteItem.objectId = currentItem.key
+                    NoteItem.fbnttitle = map["fbnttitle"] as String?
+                    NoteItem.fbntdata = map["fbntdata"] as String?
+                    NoteItem.timestamp = map["timestamp"] as String?
+                    Log.i("@codekul","adddatatoList :\n objectkey :${currentItem.key} \n ${map["fbnttitle"] as String?}")
+                    noteItemList!!.add(NoteItem);
+                }
+            }
+            //alert adapter that has changed
+            adapter?.notifyDataSetChanged()
+            mSwipeRefreshLayout?.isRefreshing = false
+
+        }
+        override fun onCancelled(databaseError: DatabaseError) {
+
+            // Getting Item failed, log a message
+            Log.w("MainActivity", "loadItem:onCancelled", databaseError.toException())
+        }
+    }
+
     override fun onQueryTextSubmit(query: String?): Boolean {
 
 
         return true //added by me
     }
 
+
     override fun onQueryTextChange(newText: String?): Boolean {
         return true //added by me
     }
 
-    override fun onItemTouched(title: String, data: String?) {
+    override fun onItemTouched(fbnttitle: String? , fbntdata: String?, timestamp: String? ,objectId: String?) {
             Log.i("@yog","card_onClick")
             val intent = Intent(this,CreateActivity::class.java)
             val bndl = Bundle()
-            bndl.putString("filename","$title")
+            bndl.putString("objectId","$objectId")
+            bndl.putString("fbnttitle","$fbnttitle")
+            bndl.putString("fbntdata","$fbntdata")
+            bndl.putString("timestamp","$timestamp")
+
+        Log.i("@codekul"," from OnITemTouch \n Object Id :$objectId ,\n Title: $fbnttitle ,\n Data : $fbntdata ,\n Timestamp : $timestamp")
             intent.putExtras(bndl)
             startActivityForResult(intent, 123)
 
     }
 
-    var mSwipeRefreshLayout: SwipeRefreshLayout? = null
-    var rawData : ArrayList<note> = ArrayList()
-    final private val RESULT_CODE = 11;
-    var adapt: Adapter? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,11 +117,7 @@ class MainActivity : AppCompatActivity(), ItemRowListener ,SearchView.OnQueryTex
                 android.R.color.holo_green_dark,
                 android.R.color.holo_orange_dark,
                 android.R.color.holo_blue_dark)
-        mSwipeRefreshLayout?.post{
 
-                mSwipeRefreshLayout?.isRefreshing = true
-
-        }
 //        /**
 //         * Showing Swipe Refresh animation on activity create
 //         * As animation won't start on onCreate, post runnable is used
@@ -76,11 +126,15 @@ class MainActivity : AppCompatActivity(), ItemRowListener ,SearchView.OnQueryTex
 //            mSwipeRefreshLayout?.isRefreshing = true
 //        }
 
-        val recyclerView = findViewById(R.id.cardview_note) as RecyclerView
+        //initialize
+        mDatabase = FirebaseDatabase.getInstance().reference
+        noteItemList = mutableListOf<NoteFB>()
+        adapter = Adapter(this,noteItemList!!)
+        val recyclerView = findViewById<RecyclerView>(R.id.cardview_note)
         recyclerView.layoutManager = GridLayoutManager(this,2)
-        updateList()
-        adapt= Adapter(this,rawData)
-        recyclerView.adapter = adapt
+        recyclerView.adapter = adapter
+        mDatabase.orderByKey().addListenerForSingleValueEvent(itemListener)
+
 
     }
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -115,17 +169,17 @@ class MainActivity : AppCompatActivity(), ItemRowListener ,SearchView.OnQueryTex
 
                     if(item.icon == view_single ){
 //                if(item.icon.drawable.ic_view_two_card_layout) ){
-                        val recyclerView = findViewById(R.id.cardview_note) as RecyclerView
+                        val recyclerView = findViewById<RecyclerView>(R.id.cardview_note)
                         recyclerView.layoutManager = LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false)
-                        recyclerView.adapter = adapt
-                        adapt?.notifyDataSetChanged()
+                        recyclerView.adapter = adapter
+                        adapter?.notifyDataSetChanged()
                         item.setIcon(view_two)
                     } else if(item.icon == view_two){
 //                    if(item.icon  == R.drawable.ic_view_two_card_layout as Drawable){
-                        val recyclerView = findViewById(R.id.cardview_note) as RecyclerView
+                        val recyclerView = findViewById<RecyclerView>(R.id.cardview_note)
                         recyclerView.layoutManager = GridLayoutManager(this,2)
-                        recyclerView.adapter = adapt
-                        adapt?.notifyDataSetChanged()
+                        recyclerView.adapter = adapter
+                        adapter?.notifyDataSetChanged()
                         item.setIcon(view_single)
                     }
                      true
@@ -167,28 +221,11 @@ class MainActivity : AppCompatActivity(), ItemRowListener ,SearchView.OnQueryTex
         super.onBackPressed()
     }
 
-    fun  updateList(){
-        rawData.clear()
-        filesDir.list().forEach {
-           try {
-               if(it.isNotBlank()) {
-                   val dtreceived = retrieve("${it.removeSuffix(".txt")}")
-                   rawData.add(note("${it.removeSuffix(".txt")}",dtreceived))
-               }
-           }catch(e : FileNotFoundException){
-               null
-           }
-        }
-        adapt?.notifyDataSetChanged()
-        mSwipeRefreshLayout?.isRefreshing = false
+
+    fun updateList(){
+adapter?.notifyDataSetChanged()
     }
 
-    fun retrieve(filename: String): String? {
-        val isp = openFileInput("$filename.txt")
-        val dt = isp.bufferedReader().use {
-            it.readLine()
-        }
-        return dt
-    }
+
 }
 

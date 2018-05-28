@@ -1,5 +1,5 @@
 package com.codekul.notekeeping
 
 interface ItemRowListener {
-fun onItemTouched( title : String , data : String?)
+fun onItemTouched(fbnttitle: String? , fbntdata: String?, timestamp: String? ,objectId: String?)
 }

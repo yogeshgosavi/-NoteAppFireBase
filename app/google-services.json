@@ -1,0 +1,59 @@
+{
+  "project_info": {
+    "project_number": "1014413894158",
+    "firebase_url": "https://notekeeping-7fee9.firebaseio.com",
+    "project_id": "notekeeping-7fee9",
+    "storage_bucket": "notekeeping-7fee9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1014413894158:android:9cfc73e0cf2f4ccf",
+        "android_client_info": {
+          "package_name": "com.codekul.notekeeping"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1014413894158-d94l94sb07rqkqu7v13k5jkoiomojvgk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.codekul.notekeeping",
+            "certificate_hash": "3473d055a1cf0ad9a05437dd432f3da17965f322"
+          }
+        },
+        {
+          "client_id": "1014413894158-cuefhdh4lqin1n5039s7b9dv9d9o8ldn.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "1014413894158-cuefhdh4lqin1n5039s7b9dv9d9o8ldn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDxCoPVfE9dIcL5SzSxZL42rGNhfh0b3KA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1014413894158-cuefhdh4lqin1n5039s7b9dv9d9o8ldn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
